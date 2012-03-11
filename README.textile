@@ -1,0 +1,29 @@
+h1. Magento installation with phing
+
+This is a "fork" of Matthias Zeis "Mage Spawner". You can find the original source code of Matthias under the following URL:
+[https://github.com/mzeis/MageSpawner:https://github.com/mzeis/MageSpawner].
+
+This script works with phing.
+
+h2. Install phing
+
+Phing is a build system based on PHP. It's syntax is similar to java build system ant.
+You can easily install phing with pear installer.
+
+<pre>
+pear channel-discover pear.phing.info
+pear install phing/phing
+</pre>
+
+h2. Run phing installer
+
+Before you can start, please copy build.properties.sample to build.properties and change the configuration in the file.
+After setup the config you can run the build script with this command from bash within the Phing-Magento-Installer folder.
+
+<pre>
+phing install
+</pre>
+
+h2. Setup virtual hosts
+
+The script is designed to work with VirtualDocumentRoot like described in Matthias Zeis readme file.
