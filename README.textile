@@ -1,7 +1,7 @@
 h1. Magento installation with phing
 
 This is a "fork" of Matthias Zeis "Mage Spawner". You can find the original source code of Matthias under the following URL:
-[https://github.com/mzeis/MageSpawner:https://github.com/mzeis/MageSpawner].
+"https://github.com/mzeis/MageSpawner":https://github.com/mzeis/MageSpawner.
 
 This script works with phing.
 
@@ -20,8 +20,16 @@ h2. Run phing installer
 Before you can start, please copy build.properties.sample to build.properties and change the configuration in the file.
 After setup the config you can run the build script with this command from bash within the Phing-Magento-Installer folder.
 
+h3. Start installation process
+
 <pre>
 phing install
+</pre>
+
+h3. Uninstall
+
+<pre>
+phing uninstall
 </pre>
 
 h2. Setup virtual hosts
