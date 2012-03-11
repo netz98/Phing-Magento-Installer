@@ -273,7 +273,7 @@
     <!-- Remove magento installation -->
     <target name="uninstall" depends="check_requirements">
         <!-- List installations -->
-        <exec command="ls -l" dir="${mage.base.dir}" />
+        <exec command="ls -l" dir="${mage.base.dir}" passthru="true" />
         <input message="Which shop do you want to uninstall? Provide only the subdomain part of the domains provided." propertyName="mage.uninstall.name" />
 
         <if>
@@ -284,12 +284,12 @@
         </if>
 
         <!-- Drop database -->
-        <property name="db.name" value="${db.nameprefix}${mage.name}" />
+        <property name="db.name" value="${db.nameprefix}${mage.uninstall.name}" />
         <echo msg="Drop database ${db.name}" />
-        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;DROP DATABASE ${db.name};" />
+        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;DROP DATABASE ${db.name};&quot;" />
 
         <!-- Remove magento installation directory -->
-        <delete dir="${mage.base.dir}/${mage.uninstall.name}" />
+        <delete dir="${mage.base.dir}/${mage.uninstall.name}.${mage.domain}" />
 
         <echo msg="Shop was deleted successfully. Please delete vhost entries and host config as needed." />
     </target>
