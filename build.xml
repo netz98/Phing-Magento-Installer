@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<project name="magento-phing" default="help">
+    <property file="build.properties" />
+
+    <target name="help">
+
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Check system requirements                 -->
+    <!-- ========================================= -->
+    <target name="check_requirements">
+
+        <!-- Check if basedir exists -->
+        <if>
+            <not>
+                <available file="${mage.base.dir}" />
+            </not>
+            <then>
+                <fail msg="Base dir &quot;${mage.base.dir}&quot; does not exist." />
+            </then>
+        </if>
+
+        <!-- Check mysql client tools -->
+        <exec command="which mysql" outputProperty="bin.mysql" returnProperty="mage.requirement.mysql" />
+        <if>
+            <equals arg1="${mage.requirement.mysql}" arg2="1" />
+            <then>
+                <fail msg="MySQL client tools was not found. Please check installation."/>
+            </then>
+        </if>
+
+        <!-- Check PHP -->
+        <exec command="which php" outputProperty="bin.php" returnProperty="mage.requirement.php" />
+        <if>
+            <equals arg1="${mage.requirement.php}" arg2="1" />
+            <then>
+                <fail msg="PHP CLI was not found. Please check installation." />
+            </then>
+        </if>
+
+        <!-- Check wget -->
+        <exec command="which wget" outputProperty="bin.wget" returnProperty="mage.requirement.wget" />
+        <if>
+            <equals arg1="${mage.requirement.wget}" arg2="1" />
+            <then>
+                <fail msg="wget downloader was not found. Please check installation." />
+            </then>
+        </if>
+
+        <!-- Check tar -->
+        <exec command="which tar" outputProperty="bin.tar" returnProperty="mage.requirement.tar" />
+        <if>
+            <equals arg1="${mage.requirement.tar}" arg2="1" />
+            <then>
+                <fail msg="tar extractor was not found. Please check installation." />
+            </then>
+        </if>
+
+        <!-- Check sed -->
+        <exec command="which sed" outputProperty="bin.sed" returnProperty="mage.requirement.sed" />
+        <if>
+            <equals arg1="${mage.requirement.sed}" arg2="1" />
+            <then>
+                <fail msg="sed was not found. Please check installation." />
+            </then>
+        </if>
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Choose target magento version             -->
+    <!-- ========================================= -->
+    <target name="choose_magento_version">
+        <echo>
+        Which version do you want to install?
+
+        1) None, abort installation
+        2) CE 1.5.0.1
+        3) CE 1.5.1.0
+        4) CE 1.6.0.0
+        5) CE 1.6.1.0
+        6) CE 1.6.2.0
+        7) CE 1.7.0.0 alpha1
+        8) CE 1.7.0.0 beta1
+        </echo>
+        <input message="Please select magento version to install:" propertyName="mage.install.version" defaultValue="6" />
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Define shop name                          -->
+    <!-- ========================================= -->
+    <target name="define_shop_config">
+        <input message="Specify the shop name. It may be used for the URL, directory and database name, so don't use spaces, special characters or the like." defaultValue="${mage.default.name}" propertyName="mage.name" />
+        <property name="mage.shopdomain" value="${mage.name}.${mage.domain}" />
+        <property name="mage.unsecure.url" value="http://${mage.shopdomain}" />
+        <property name="mage.secure.url" value="https://${mage.shopdomain}" />
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Download magento                          -->
+    <!-- ========================================= -->
+    <target name="download_magento_tarball" depends="choose_magento_version">
+
+        <if>
+            <equals arg1="1" arg2="${mage.install.version}" />
+            <then>
+                <fail message="Installation aborted" />
+            </then>
+
+            <!-- 2: CE 1.5.0.1 -->
+            <elseif>
+                <equals arg1="2" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.5.0.1/magento-1.5.0.1.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 3: CE 1.5.1.0 -->
+            <elseif>
+                <equals arg1="3" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.5.1.0/magento-1.5.1.0.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 4: CE 1.6.0.0 -->
+            <elseif>
+                <equals arg1="4" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.0.0/magento-1.6.0.0.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 5: CE 1.6.1.0 -->
+            <elseif>
+                <equals arg1="5" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-1.6.1.0.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 6: CE 1.6.2.0 -->
+            <elseif>
+                <equals arg1="6" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.2.0/magento-1.6.2.0.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 7: CE 1.7.0.0 alpha1 -->
+            <elseif>
+                <equals arg1="7" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz" />
+                </then>
+            </elseif>
+
+            <!-- 8: CE 1.7.0.0 beta1 -->
+            <elseif>
+                <equals arg1="8" arg2="${mage.install.version}" />
+                <then>
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz" />
+                </then>
+            </elseif>
+            
+            <else>
+                <fail msg="Invalid option, please try again" />
+            </else>
+        </if>
+
+        <echo msg="${mage.download.url}" />
+        <exec command="basename ${mage.download.url}" outputProperty="mage.download.file" />
+        <if>
+            <not>
+                <available file="${mage.download.dir}/${mage.download.file}" />
+            </not>
+            <then>
+                <exec command="${bin.wget} ${mage.download.url}" passthru="true" dir="${mage.download.dir}" />
+            </then>
+        </if>
+
+        <echo msg="Extracting magento tarball" />
+        <exec command="${bin.tar} xfz ${mage.download.file}" dir="${mage.download.dir}" />
+        <exec command="mv ${mage.download.dir}/magento ${mage.base.dir}/${mage.shopdomain}" />
+        <chmod mode="0777" verbose="true">
+            <fileset dir="${mage.base.dir}/${mage.shopdomain}">
+                <include name="app/etc" />
+                <include name="var" />
+                <include name="media" />
+            </fileset>
+        </chmod>
+        <if>
+            <istrue value="${mage.download.delete_tarball}" />
+            <then>
+                <delete file="${mage.download.dir}/${mage.download.file}" />
+            </then>
+        </if>
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Install database                          -->
+    <!-- ========================================= -->
+    <target name="install_database">
+        <property name="db.name" value="${db.nameprefix}${mage.name}" />
+        <!-- Create database -->
+        <if>
+            <equals arg1="${db.pass}" arg2="" />
+            <then>
+                <echo msg="Your mysql password was not set in build properties. If your password is empty just press enter." />
+            </then>
+        </if>
+        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;CREATE DATABASE IF NOT EXISTS ${db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;&quot;" />
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Install database                          -->
+    <!-- ========================================= -->
+    <target name="install_magento">
+        <exec command="
+            ${bin.php} -f install.php --
+                --license_agreement_accepted &quot;yes&quot;
+                --locale &quot;${mage.locale}&quot;
+                --timezone &quot;${mage.timezone}&quot;
+                --default_currency &quot;${mage.currency}&quot;
+                --db_host &quot;${db.host}&quot;
+                --db_name &quot;${db.name}&quot;
+                --db_user &quot;${db.user}&quot;
+                --db_pass &quot;${db.pass}&quot;
+                --db_prefix &quot;${db.tableprefix}&quot;
+                --session_save &quot;${mage.session.save}&quot;
+                --admin_frontname &quot;${admin.frontname}&quot;
+                --url &quot;${mage.unsecure.url}&quot;
+                --skip_url_validation
+                --use_rewrites &quot;yes&quot;
+                --use_secure &quot;no&quot;
+                --secure_base_url &quot;${mage.secure.url}&quot;
+                --use_secure_admin &quot;no&quot;
+                --admin_firstname &quot;${admin.username}&quot;
+                --admin_lastname &quot;${admin.lastname}&quot;
+                --admin_email &quot;${admin.email}&quot;
+                --admin_username &quot;${admin.username}&quot;
+                --admin_password &quot;${admin.password}&quot;
+        " dir="${mage.base.dir}/${mage.shopdomain}" />
+
+        <!-- Reindex all -->
+        <exec command="${bin.php} -f indexer.php reindexall" dir="${mage.base.dir}/${mage.shopdomain}/shell" />
+
+        <!-- Editing .htaccess for VirtualDocumentRoot configuration (setting RewriteBase)... -->
+        <copy file="${mage.base.dir}/${mage.shopdomain}/.htaccess" tofile="${mage.base.dir}/${mage.shopdomain}/.htaccess.backup" />
+
+        <!-- Replace RewriteBase -->
+        <exec command="${bin.sed} &quot;s/#RewriteBase \/magento\//RewriteBase \//&quot; .htaccess.backup > .htaccess" dir="${mage.base.dir}/${mage.shopdomain}" />
+        <delete file="${mage.base.dir}/${mage.shopdomain}/.htaccess.backup" />
+
+        <!-- Change permissions of local.xml file -->
+        <chmod mode="0644" file="${mage.base.dir}/${mage.shopdomain}/app/etc/local.xml" />
+        <chown user="${linux.user}.${linux.group}" file="${mage.base.dir}/${mage.shopdomain}/app/etc/local.xml" />
+
+        <echo>
+        If you didn't see any error messages, everything went fine.
+        Set up your vhost config and host entries (if needed) and you are ready to go!
+        The frontend shop URL is ${mage.unsecure.url}.
+        </echo>
+
+        <!-- @TODO Automatically create host entry -->
+
+        <!-- @TODO Install magento sample data -->
+    </target>
+
+    <!-- Complete installation routines -->
+    <target name="install" depends="check_requirements, define_shop_config, choose_magento_version, download_magento_tarball, install_database, install_magento" />
+
+    <!-- Remove magento installation -->
+    <target name="uninstall" depends="check_requirements">
+        <!-- List installations -->
+        <exec command="ls -l" dir="${mage.base.dir}" />
+        <input message="Which shop do you want to uninstall? Provide only the subdomain part of the domains provided." propertyName="mage.uninstall.name" />
+
+        <if>
+            <equals arg1="${mage.uninstall.name}" arg2="" />
+            <then>
+                <fail message="Please enter the name of the magento instance to uninstall" />
+            </then>
+        </if>
+
+        <!-- Drop database -->
+        <property name="db.name" value="${db.nameprefix}${mage.name}" />
+        <echo msg="Drop database ${db.name}" />
+        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;DROP DATABASE ${db.name};" />
+
+        <!-- Remove magento installation directory -->
+        <delete dir="${mage.base.dir}/${mage.uninstall.name}" />
+
+        <echo msg="Shop was deleted successfully. Please delete vhost entries and host config as needed." />
+    </target>
+
+</project>

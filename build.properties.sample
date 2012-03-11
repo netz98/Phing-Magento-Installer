@@ -1,0 +1,65 @@
+# The shops will be created under this subdomain
+mage.default.name = shop
+
+# Preset for the shop name. The shop name is used as part of the domain, directory and database name.
+mage.domain = magento.local
+
+# Base directory for the Magento installations
+mage.base.dir = /path/to/your/dir
+
+# Delete tarball after download
+mage.download.delete_tarball = false
+
+# Download folder
+mage.download.dir = /tmp
+
+# Defines the session storage
+mage.session.save = files
+
+# Timezone of magento installation
+mage.timezone = Europe/Berlin
+
+# Locale of magento installation
+mage.locale = de_DE
+
+# Locale of magento installation
+mage.currency = Euro
+
+# File owner for the Magento installation
+linux.user = www-data
+
+# File group for the Magento installation
+linux.group = www-data
+
+# Path to the admin panel
+admin.frontname = admin
+
+# Admin user first name
+admin.firstname = John
+
+# Admin user last name
+admin.lastname = Doe
+
+# Admin user e-mail
+admin.email = admin@example.com
+
+# Admin user login
+admin.username = admin
+
+# Admin user password
+admin.password = 123123
+
+# Database host
+db.host = localhost
+
+# Database user. Needs privileges for creating databases.
+db.user = root
+
+# Database user password
+db.pass =
+
+# Database name prefix (pseudo namespace for all installations)
+db.nameprefix = magento_
+
+# Database table prefix
+db.tableprefix =
