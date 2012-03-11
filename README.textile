@@ -1,7 +1,7 @@
 h1. Magento installation with phing
 
 This is a "fork" of Matthias Zeis "Mage Spawner". You can find the original source code of Matthias under the following URL:
-[https://github.com/mzeis/MageSpawner:https://github.com/mzeis/MageSpawner].
+"https://github.com/mzeis/MageSpawner":https://github.com/mzeis/MageSpawner.
 
 This script works with phing.
 
