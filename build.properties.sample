@@ -47,7 +47,7 @@ admin.email = admin@example.com
 admin.username = admin
 
 # Admin user password
-admin.password = 123123
+admin.password = password123123
 
 # Database host
 db.host = localhost

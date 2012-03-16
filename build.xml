@@ -111,7 +111,7 @@
             <elseif>
                 <equals arg1="2" arg2="${mage.install.version}" />
                 <then>
-                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.5.0.1/magento-1.5.0.1.tar.gz" />
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.5.0.1/magento-1.5.0.1.tar.gz" />                    
                 </then>
             </elseif>
 
@@ -128,6 +128,7 @@
                 <equals arg1="4" arg2="${mage.install.version}" />
                 <then>
                     <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.0.0/magento-1.6.0.0.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
                 </then>
             </elseif>
 
@@ -136,6 +137,7 @@
                 <equals arg1="5" arg2="${mage.install.version}" />
                 <then>
                     <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-1.6.1.0.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
                 </then>
             </elseif>
 
@@ -144,6 +146,7 @@
                 <equals arg1="6" arg2="${mage.install.version}" />
                 <then>
                     <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.2.0/magento-1.6.2.0.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
                 </then>
             </elseif>
 
@@ -152,6 +155,7 @@
                 <equals arg1="7" arg2="${mage.install.version}" />
                 <then>
                     <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
                 </then>
             </elseif>
 
@@ -160,6 +164,7 @@
                 <equals arg1="8" arg2="${mage.install.version}" />
                 <then>
                     <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
                 </then>
             </elseif>
             
@@ -209,11 +214,46 @@
                 <echo msg="Your mysql password was not set in build properties. If your password is empty just press enter." />
             </then>
         </if>
-        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;CREATE DATABASE IF NOT EXISTS ${db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;&quot;" />
+        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} -e &quot;CREATE DATABASE IF NOT EXISTS ${db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;&quot;" checkreturn="true" />
     </target>
 
     <!-- ========================================= -->
-    <!-- Install database                          -->
+    <!-- Install sample data                       -->
+    <!-- ========================================= -->
+    <target name="install_magento_sampledata">
+        <if>
+            <isset property="mage.sampledata.download.url" />
+            <then>
+                <input message="Install magento demo data?" defaultValue="y" propertyName="mage.install.sampledata" validArgs="y,n" />
+                <if>
+                    <equals arg1="y" arg2="${mage.install.sampledata}" />
+                    <then>
+                    <!-- Download demo data -->
+                        <exec command="basename ${mage.sampledata.download.url}" outputProperty="mage.sampledata.download.file" checkreturn="true" />
+                        <if>
+                            <not>
+                                <available file="${mage.download.dir}/${mage.sampledata.download.file}" />
+                            </not>
+                            <then>
+                                <exec command="${bin.wget} ${mage.sampledata.download.url}" passthru="true" dir="${mage.download.dir}" checkreturn="true" />
+                            </then>
+                        </if>
+
+                    <!-- Extract sampledata tarball -->
+                        <exec command="${bin.tar} xfz ${mage.sampledata.download.file}" dir="${mage.download.dir}" />
+
+                        <exec command="cp -r ${mage.download.dir}/magento-sample-data-1.6.1.0/media/* ${mage.base.dir}/${mage.shopdomain}/media/" />
+
+                    <!-- Install demo database values -->
+                        <exec command="${bin.mysql} -h${db.host} -u${db.user} -p${db.pass} ${db.name} &lt; ${mage.download.dir}/magento-sample-data-1.6.1.0/magento_sample_data_for_1.6.1.0.sql" passthru="yes" checkreturn="true" />
+                    </then>
+                </if>
+            </then>
+        </if>   
+    </target>
+
+    <!-- ========================================= -->
+    <!-- Install magento                           -->
     <!-- ========================================= -->
     <target name="install_magento">
         <exec command="
@@ -240,7 +280,7 @@
                 --admin_email &quot;${admin.email}&quot;
                 --admin_username &quot;${admin.username}&quot;
                 --admin_password &quot;${admin.password}&quot;
-        " dir="${mage.base.dir}/${mage.shopdomain}" />
+        " dir="${mage.base.dir}/${mage.shopdomain}" passthru="true" checkreturn="true" />
 
         <!-- Reindex all -->
         <exec command="${bin.php} -f indexer.php reindexall" dir="${mage.base.dir}/${mage.shopdomain}/shell" />
@@ -256,6 +296,9 @@
         <chmod mode="0644" file="${mage.base.dir}/${mage.shopdomain}/app/etc/local.xml" />
         <chown user="${linux.user}.${linux.group}" file="${mage.base.dir}/${mage.shopdomain}/app/etc/local.xml" />
 
+	<!-- chown (recursive) of var folder -->
+        <exec command="chown ${linux.user}.${linux.group} ${mage.base.dir}/${mage.shopdomain}/var" />
+
         <echo>
         If you didn't see any error messages, everything went fine.
         Set up your vhost config and host entries (if needed) and you are ready to go!
@@ -263,12 +306,10 @@
         </echo>
 
         <!-- @TODO Automatically create host entry -->
-
-        <!-- @TODO Install magento sample data -->
     </target>
 
     <!-- Complete installation routines -->
-    <target name="install" depends="check_requirements, define_shop_config, choose_magento_version, download_magento_tarball, install_database, install_magento" />
+    <target name="install" depends="check_requirements, define_shop_config, choose_magento_version, download_magento_tarball, install_database, install_magento_sampledata, install_magento" />
 
     <!-- Remove magento installation -->
     <target name="uninstall" depends="check_requirements">
