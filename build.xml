@@ -80,11 +80,9 @@
         4) CE 1.6.0.0
         5) CE 1.6.1.0
         6) CE 1.6.2.0
-        7) CE 1.7.0.0 alpha1
-        8) CE 1.7.0.0 beta1
-        9) CE 1.7.0.0 rc1
+        7) CE 1.7.0.0
         </echo>
-        <input message="Please select magento version to install:" propertyName="mage.install.version" defaultValue="6" />
+        <input message="Please select magento version to install:" propertyName="mage.install.version" defaultValue="7" />
     </target>
 
     <!-- ========================================= -->
@@ -151,33 +149,15 @@
                 </then>
             </elseif>
 
-            <!-- 7: CE 1.7.0.0 alpha1 -->
+            <!-- 7: CE 1.7.0.0 -->
             <elseif>
                 <equals arg1="7" arg2="${mage.install.version}" />
                 <then>
-                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-alpha1/magento-1.7.0.0-alpha1.tar.gz" />
-                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
+                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0/magento-1.7.0.0.tar.gz" />
+                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0/magento-1.7.0.0.tar.gz" />
                 </then>
             </elseif>
 
-            <!-- 8: CE 1.7.0.0 beta1 -->
-            <elseif>
-                <equals arg1="8" arg2="${mage.install.version}" />
-                <then>
-                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-beta1/magento-1.7.0.0-beta1.tar.gz" />
-                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
-                </then>
-            </elseif>
-
-            <!-- 9: CE 1.7.0.0 rc1 -->
-            <elseif>
-                <equals arg1="8" arg2="${mage.install.version}" />
-                <then>
-                    <property name="mage.download.url" value="http://www.magentocommerce.com/downloads/assets/1.7.0.0-rc1/magento-1.7.0.0-rc1.tar.gz" />
-                    <property name="mage.sampledata.download.url" value="http://www.magentocommerce.com/downloads/assets/1.6.1.0/magento-sample-data-1.6.1.0.tar.gz" />
-                </then>
-            </elseif>
-            
             <else>
                 <fail msg="Invalid option, please try again" />
             </else>
